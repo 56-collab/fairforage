@@ -1,0 +1,12 @@
+{
+  "name": "fairforge",
+  "version": "1.0.0",
+  "description": "FairForge — Intelligent Team Contribution & Workload Management Platform",
+  "scripts": {
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev"
+  },
+  "keywords": ["fairforge", "mern", "react", "express", "mongodb"],
+  "author": "",
+  "license": "ISC"
+}
