@@ -1,6 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { RectangleButtons } from '../shaders/rectangle-buttons/RectangleButtons';
+import FairForgeBackground from '../components/effects/FairForgeBackground';
+import '../shaders/threeui.css';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -16,9 +19,18 @@ import {
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBloomCtaClick = () => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/register');
+    }
+  };
 
   return (
-    <div style={{ paddingBottom: '5rem' }}>
+    <div style={{ position: 'relative', paddingBottom: '5rem', overflow: 'hidden' }}>
       {/* Hero Section */}
       <section
         style={{
@@ -28,7 +40,10 @@ const LandingPage = () => {
           position: 'relative',
         }}
       >
-        <div className="container" style={{ maxWidth: '900px' }}>
+        {/* Ambient ThreeUI ElementsCollection Fire Background */}
+        <FairForgeBackground />
+
+        <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '900px' }}>
           {/* Badge */}
           <div
             style={{
@@ -89,52 +104,67 @@ const LandingPage = () => {
             tasks equitably, track real contribution metrics, and eliminate project burnout.
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons with ThreeUI RectangleButtons (Bloom Outline Button) */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '1rem',
+              gap: '1.25rem',
               flexWrap: 'wrap',
             }}
           >
-            {isAuthenticated ? (
-              <Link
-                to="/dashboard"
-                className="btn btn-primary"
+            {/* Primary Interactive Bloom Outline CTA */}
+            <div
+              onClick={handleBloomCtaClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleBloomCtaClick();
+                }
+              }}
+              style={{
+                display: 'inline-block',
+                cursor: 'pointer',
+                borderRadius: '8px',
+                outline: 'none',
+              }}
+              title={isAuthenticated ? 'Go to Dashboard' : 'Get Started Free'}
+            >
+              <RectangleButtons
+                variant="bloom-outline-button"
+                mode="dark"
+                hue={0}
+                saturation={1.00}
+                brightness={1.00}
                 style={{
-                  padding: '0.85rem 2rem',
-                  fontSize: '1rem',
+                  minHeight: 'unset',
+                  height: 'auto',
+                  background: 'transparent',
+                  padding: 0,
+                  width: 'auto',
+                  display: 'inline-flex',
+                }}
+              />
+            </div>
+
+            {/* Secondary Standard Action */}
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                className="btn btn-secondary"
+                style={{
+                  padding: '0.85rem 1.75rem',
+                  fontSize: '0.95rem',
+                  height: '46px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
-                Go to Dashboard
-                <ArrowRight size={18} />
+                Sign In
               </Link>
-            ) : (
-              <>
-                <Link
-                  to="/register"
-                  className="btn btn-primary"
-                  style={{
-                    padding: '0.85rem 2rem',
-                    fontSize: '1rem',
-                  }}
-                >
-                  Get Started Free
-                  <ArrowRight size={18} />
-                </Link>
-                <Link
-                  to="/login"
-                  className="btn btn-secondary"
-                  style={{
-                    padding: '0.85rem 1.75rem',
-                    fontSize: '1rem',
-                  }}
-                >
-                  Sign In
-                </Link>
-              </>
             )}
           </div>
         </div>
