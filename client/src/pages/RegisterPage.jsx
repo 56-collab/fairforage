@@ -40,7 +40,11 @@ const RegisterPage = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.message || err.message || 'Registration failed');
+      if (!err.response) {
+        setError('Unable to reach server. If using Render free tier, the backend may take up to ~45s to wake up from sleep. Please wait and try again.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }

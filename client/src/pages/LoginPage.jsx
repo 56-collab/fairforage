@@ -30,7 +30,11 @@ const LoginPage = () => {
       navigate(from, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
-      setError(err.response?.data?.message || err.message || 'Invalid email or password');
+      if (!err.response) {
+        setError('Unable to reach server. If using Render free tier, the backend may take up to ~45s to wake up from sleep. Please wait and try again.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Invalid email or password');
+      }
     } finally {
       setLoading(false);
     }

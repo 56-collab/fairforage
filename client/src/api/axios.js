@@ -1,11 +1,32 @@
 import axios from 'axios';
 
+// Determine the API base URL depending on environment
+const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '');
+  }
+  
+  // If running on Vercel or any non-localhost host without custom env
+  if (
+    import.meta.env.PROD ||
+    (typeof window !== 'undefined' &&
+      !window.location.hostname.includes('localhost') &&
+      !window.location.hostname.includes('127.0.0.1'))
+  ) {
+    return 'https://fairforage.onrender.com/api';
+  }
+
+  // Local development fallback to Vite proxy
+  return '/api';
+};
+
 // Create base Axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 seconds to handle Render cold-starts
 });
 
 // Request interceptor: Attach JWT token if available
@@ -25,10 +46,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and auth state on unauthorized response (if not on login/register endpoints)
+      const url = error.config?.url || '';
       const isAuthEndpoint =
-        error.config.url.includes('/auth/login') ||
-        error.config.url.includes('/auth/register');
+        url.includes('/auth/login') || url.includes('/auth/register');
 
       if (!isAuthEndpoint) {
         localStorage.removeItem('fairforge_token');
