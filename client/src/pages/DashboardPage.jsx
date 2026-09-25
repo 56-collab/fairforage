@@ -4,6 +4,7 @@ import api from '../api/axios';
 import ProjectCard from '../components/ProjectCard';
 import CreateProjectModal from '../components/CreateProjectModal';
 import LoadingSpinner from '../components/LoadingSpinner';
+import FairForgeBackground from '../components/effects/FairForgeBackground';
 import { 
   PlusCircle, 
   FolderGit2, 
@@ -76,11 +77,16 @@ const DashboardPage = ({ isCreateModalOpen, setIsCreateModalOpen }) => {
   });
 
   return (
-    <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+    <div className="container" style={{ position: 'relative', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+      {/* ThreeUI Ambient Fire Shader Effect Layer */}
+      <FairForgeBackground />
+
       {/* Welcome Banner / Overview Stats */}
       <div
         className="glass-panel"
         style={{
+          position: 'relative',
+          zIndex: 1,
           padding: '2rem',
           marginBottom: '2.5rem',
           background: 'linear-gradient(135deg, rgba(20, 27, 65, 0.7) 0%, rgba(13, 17, 38, 0.9) 100%)',
