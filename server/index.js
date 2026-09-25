@@ -74,6 +74,12 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/projects', require('./routes/projects'));
+app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/activity', require('./routes/activity'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/github', require('./routes/github'));
+app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/recommendations', require('./routes/recommendations'));
 
 // 404 Route Handler
 app.use((req, res, next) => {

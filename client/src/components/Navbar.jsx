@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationDropdown from './NotificationDropdown';
 import { 
   Layers, 
   LayoutDashboard, 
+  UserCheck, 
   LogOut, 
   Menu, 
   X, 
   User, 
   PlusCircle, 
+  Settings,
   Sparkles 
 } from 'lucide-react';
 
@@ -32,7 +35,7 @@ const Navbar = ({ onOpenCreateModal }) => {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: 'rgba(7, 9, 19, 0.75)',
+        background: 'rgba(7, 9, 19, 0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--glass-border)',
@@ -98,7 +101,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 marginTop: '-3px',
               }}
             >
-              Workload Platform
+              Intelligent Workload
             </span>
           </div>
         </Link>
@@ -119,30 +122,45 @@ const Navbar = ({ onOpenCreateModal }) => {
               fontWeight: 500,
               color: isActive('/') ? '#ffffff' : 'var(--text-muted)',
               transition: 'color var(--transition-fast)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
             }}
           >
             Home
           </Link>
 
           {isAuthenticated && (
-            <Link
-              to="/dashboard"
-              style={{
-                fontSize: '0.925rem',
-                fontWeight: 500,
-                color: isActive('/dashboard') ? '#ffffff' : 'var(--text-muted)',
-                transition: 'color var(--transition-fast)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              <LayoutDashboard size={16} />
-              Dashboard
-            </Link>
+            <>
+              <Link
+                to="/dashboard"
+                style={{
+                  fontSize: '0.925rem',
+                  fontWeight: 500,
+                  color: isActive('/dashboard') ? '#ffffff' : 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'color var(--transition-fast)',
+                }}
+              >
+                <LayoutDashboard size={16} />
+                Projects
+              </Link>
+
+              <Link
+                to="/my-dashboard"
+                style={{
+                  fontSize: '0.925rem',
+                  fontWeight: 500,
+                  color: isActive('/my-dashboard') ? '#ffffff' : 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'color var(--transition-fast)',
+                }}
+              >
+                <UserCheck size={16} />
+                My Workspace
+              </Link>
+            </>
           )}
         </nav>
 
@@ -157,6 +175,9 @@ const Navbar = ({ onOpenCreateModal }) => {
         >
           {isAuthenticated ? (
             <>
+              {/* In-app Notification Bell */}
+              <NotificationDropdown />
+
               {onOpenCreateModal && (
                 <button
                   onClick={onOpenCreateModal}
@@ -171,15 +192,20 @@ const Navbar = ({ onOpenCreateModal }) => {
                 </button>
               )}
 
-              <div
+              {/* User badge with profile link */}
+              <Link
+                to="/profile"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.35rem 0.75rem 0.35rem 0.4rem',
+                  gap: '0.65rem',
+                  padding: '0.35rem 0.85rem 0.35rem 0.4rem',
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid var(--glass-border)',
                   borderRadius: 'var(--radius-full)',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  transition: 'all var(--transition-fast)',
                 }}
               >
                 <div
@@ -209,28 +235,29 @@ const Navbar = ({ onOpenCreateModal }) => {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {user?.name || 'User'}
+                  {user?.name || 'Profile'}
                 </span>
-                <button
-                  onClick={handleLogout}
-                  title="Log out"
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    transition: 'color var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = '#f43f5e')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                title="Log out"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '6px',
+                  borderRadius: '6px',
+                  transition: 'color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#f43f5e')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+              >
+                <LogOut size={18} />
+              </button>
             </>
           ) : (
             <>
@@ -259,31 +286,38 @@ const Navbar = ({ onOpenCreateModal }) => {
         </div>
 
         {/* Mobile Hamburger Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle navigation menu"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid var(--glass-border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0.5rem',
-            color: '#ffffff',
-            cursor: 'pointer',
-          }}
-          className="mobile-toggle"
-        >
-          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="mobile-toggle-group">
+          {isAuthenticated && (
+            <div className="mobile-notif">
+              <NotificationDropdown />
+            </div>
+          )}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.5rem',
+              color: '#ffffff',
+              cursor: 'pointer',
+            }}
+            className="mobile-toggle"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div
           style={{
-            background: 'rgba(10, 13, 30, 0.96)',
+            background: 'rgba(10, 13, 30, 0.98)',
             backdropFilter: 'blur(25px)',
             WebkitBackdropFilter: 'blur(25px)',
             borderBottom: '1px solid var(--glass-border)',
@@ -323,7 +357,41 @@ const Navbar = ({ onOpenCreateModal }) => {
                 }}
               >
                 <LayoutDashboard size={18} />
-                Dashboard
+                Project Workspaces
+              </Link>
+
+              <Link
+                to="/my-dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  padding: '0.75rem 0',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  color: isActive('/my-dashboard') ? '#6366f1' : 'var(--text-main)',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <UserCheck size={18} />
+                My Personal Workspace
+              </Link>
+
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  padding: '0.75rem 0',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                  color: isActive('/profile') ? '#6366f1' : 'var(--text-main)',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <Settings size={18} />
+                Profile & Settings
               </Link>
 
               {onOpenCreateModal && (
@@ -413,7 +481,7 @@ const Navbar = ({ onOpenCreateModal }) => {
         @media (min-width: 768px) {
           .desktop-nav { display: flex !important; }
           .desktop-actions { display: flex !important; }
-          .mobile-toggle { display: none !important; }
+          .mobile-toggle-group { display: none !important; }
           .mobile-drawer { display: none !important; }
         }
       `}</style>

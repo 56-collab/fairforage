@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { X, Plus, AlertCircle, FolderPlus } from 'lucide-react';
+import { X, Plus, AlertCircle, FolderPlus, Calendar, Layers } from 'lucide-react';
 import api from '../api/axios';
 
 const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [techStack, setTechStack] = useState('');
   const [status, setStatus] = useState('active');
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [deadline, setDeadline] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,17 +27,22 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
       setError('');
 
       const res = await api.post('/projects', {
-        name,
-        description,
+        name: name.trim(),
+        description: description.trim(),
         tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+        techStack: techStack ? techStack.split(',').map((t) => t.trim()).filter(Boolean) : [],
         status,
+        startDate: startDate || new Date(),
+        deadline: deadline || null,
       });
 
       if (res.data.success) {
         setName('');
         setDescription('');
         setTags('');
+        setTechStack('');
         setStatus('active');
+        setDeadline('');
         onProjectCreated(res.data.project);
         onClose();
       }
@@ -56,9 +64,8 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '1rem',
-        background: 'rgba(5, 7, 15, 0.75)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        background: 'rgba(5, 7, 15, 0.8)',
+        backdropFilter: 'blur(10px)',
       }}
       onClick={onClose}
     >
@@ -66,11 +73,13 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: '520px',
-          background: 'rgba(15, 20, 45, 0.95)',
+          maxWidth: '540px',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          background: 'rgba(15, 20, 45, 0.98)',
           padding: '2rem',
           border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.2)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.2)',
           position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -87,9 +96,9 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div
               style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
                 background: 'rgba(99, 102, 241, 0.2)',
                 display: 'flex',
                 alignItems: 'center',
@@ -101,10 +110,10 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
             </div>
             <div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff' }}>
-                Create New Project
+                Create Team Project
               </h2>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Set up a workspace for your team and tasks
+                Set up a workspace for team collaboration and workload management
               </p>
             </div>
           </div>
@@ -118,9 +127,6 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
               color: 'var(--text-muted)',
               cursor: 'pointer',
               padding: '0.4rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <X size={18} />
@@ -158,7 +164,7 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
               id="proj-name"
               type="text"
               className="form-control"
-              placeholder="e.g. FairForge Core Platform"
+              placeholder="e.g. Distributed Cloud Engine"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -168,13 +174,13 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
 
           <div className="form-group">
             <label className="form-label" htmlFor="proj-desc">
-              Description
+              Description & Objectives
             </label>
             <textarea
               id="proj-desc"
               className="form-control"
               rows={3}
-              placeholder="Brief description of the project goals, milestones, or team objectives..."
+              placeholder="Summary of project goals, team milestones, or deliverables..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               style={{ resize: 'vertical' }}
@@ -189,36 +195,83 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
             }}
           >
             <div className="form-group">
-              <label className="form-label" htmlFor="proj-status">
-                Initial Status
+              <label className="form-label" htmlFor="proj-start">
+                Start Date
               </label>
-              <select
-                id="proj-status"
+              <input
+                id="proj-start"
+                type="date"
                 className="form-control"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                style={{ cursor: 'pointer' }}
-              >
-                <option value="active">Active</option>
-                <option value="planning">Planning</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="proj-deadline">
+                Target Deadline
+              </label>
+              <input
+                id="proj-deadline"
+                type="date"
+                className="form-control"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '1rem',
+            }}
+          >
+            <div className="form-group">
+              <label className="form-label" htmlFor="proj-tech">
+                Tech Stack (comma separated)
+              </label>
+              <input
+                id="proj-tech"
+                type="text"
+                className="form-control"
+                placeholder="React, Node.js, MongoDB"
+                value={techStack}
+                onChange={(e) => setTechStack(e.target.value)}
+              />
             </div>
 
             <div className="form-group">
               <label className="form-label" htmlFor="proj-tags">
-                Tags (comma separated)
+                Tags / Domain
               </label>
               <input
                 id="proj-tags"
                 type="text"
                 className="form-control"
-                placeholder="React, Backend, AI"
+                placeholder="capstone, web, ai"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="proj-status">
+              Initial Status
+            </label>
+            <select
+              id="proj-status"
+              className="form-control"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="active">Active</option>
+              <option value="planning">Planning</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
           </div>
 
           {/* Action Buttons */}

@@ -34,6 +34,26 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    bio: {
+      type: String,
+      default: '',
+      maxlength: [300, 'Bio cannot exceed 300 characters'],
+    },
+    githubUsername: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    notificationPreferences: {
+      taskAssigned: { type: Boolean, default: true },
+      deadlineApproaching: { type: Boolean, default: true },
+      workloadAlerts: { type: Boolean, default: true },
+      comments: { type: Boolean, default: true },
+    },
   },
   {
     timestamps: true,
@@ -64,6 +84,10 @@ userSchema.methods.toSafeObject = function () {
     email: this.email,
     role: this.role,
     avatar: this.avatar,
+    bio: this.bio,
+    githubUsername: this.githubUsername,
+    skills: this.skills,
+    notificationPreferences: this.notificationPreferences,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

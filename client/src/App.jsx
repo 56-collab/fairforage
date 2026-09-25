@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import PersonalDashboardPage from './pages/PersonalDashboardPage';
+import ProfileSettingsPage from './pages/ProfileSettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateProjectModal from './components/CreateProjectModal';
@@ -36,6 +38,30 @@ function App() {
             }
           />
           <Route
+            path="/my-dashboard"
+            element={
+              <ProtectedRoute>
+                <PersonalDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfileSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <ProfileSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/project/:id"
             element={
               <ProtectedRoute>
@@ -52,7 +78,6 @@ function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onProjectCreated={() => {
-          // If we are on dashboard, dashboard handles its own refresh or we can emit an update
           window.location.reload();
         }}
       />
@@ -61,7 +86,7 @@ function App() {
       <footer
         style={{
           borderTop: '1px solid var(--glass-border)',
-          background: 'rgba(7, 9, 19, 0.8)',
+          background: 'rgba(7, 9, 19, 0.85)',
           backdropFilter: 'blur(12px)',
           padding: '2rem 0',
           marginTop: 'auto',
@@ -80,12 +105,12 @@ function App() {
           }}
         >
           <div>
-            <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>FairForge</span> — Team Contribution & Workload Intelligence
+            <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>FairForge</span> — Intelligent Team Contribution & Workload Management Platform
           </div>
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></span>
-              Phase 1 Live (MERN Stack)
+              Full MERN Stack Live (Atlas Connected)
             </span>
           </div>
         </div>
