@@ -35,7 +35,7 @@ const Navbar = ({ onOpenCreateModal }) => {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        background: 'rgba(7, 9, 19, 0.85)',
+        background: 'rgba(6, 8, 16, 0.82)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--glass-border)',
@@ -64,25 +64,25 @@ const Navbar = ({ onOpenCreateModal }) => {
         >
           <div
             style={{
-              width: '38px',
-              height: '38px',
+              width: '36px',
+              height: '36px',
               borderRadius: '10px',
-              background: 'var(--accent-gradient)',
+              background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--accent-glow)',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.35)',
               color: '#fff',
             }}
           >
-            <Layers size={22} />
+            <Layers size={20} />
           </div>
           <div>
             <span
               style={{
-                fontSize: '1.25rem',
+                fontSize: '1.2rem',
                 fontWeight: 800,
-                letterSpacing: '-0.03em',
+                letterSpacing: '-0.02em',
                 background: 'linear-gradient(to right, #ffffff, #c7d2fe)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -93,7 +93,7 @@ const Navbar = ({ onOpenCreateModal }) => {
             <span
               style={{
                 display: 'block',
-                fontSize: '0.65rem',
+                fontSize: '0.62rem',
                 color: 'var(--text-subtle)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
@@ -118,7 +118,7 @@ const Navbar = ({ onOpenCreateModal }) => {
           <Link
             to="/"
             style={{
-              fontSize: '0.925rem',
+              fontSize: '0.9rem',
               fontWeight: 500,
               color: isActive('/') ? '#ffffff' : 'var(--text-muted)',
               transition: 'color var(--transition-fast)',
@@ -132,7 +132,7 @@ const Navbar = ({ onOpenCreateModal }) => {
               <Link
                 to="/dashboard"
                 style={{
-                  fontSize: '0.925rem',
+                  fontSize: '0.9rem',
                   fontWeight: 500,
                   color: isActive('/dashboard') ? '#ffffff' : 'var(--text-muted)',
                   display: 'flex',
@@ -141,14 +141,14 @@ const Navbar = ({ onOpenCreateModal }) => {
                   transition: 'color var(--transition-fast)',
                 }}
               >
-                <LayoutDashboard size={16} />
+                <LayoutDashboard size={15} />
                 Projects
               </Link>
 
               <Link
                 to="/my-dashboard"
                 style={{
-                  fontSize: '0.925rem',
+                  fontSize: '0.9rem',
                   fontWeight: 500,
                   color: isActive('/my-dashboard') ? '#ffffff' : 'var(--text-muted)',
                   display: 'flex',
@@ -157,7 +157,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                   transition: 'color var(--transition-fast)',
                 }}
               >
-                <UserCheck size={16} />
+                <UserCheck size={15} />
                 My Workspace
               </Link>
             </>
@@ -169,13 +169,12 @@ const Navbar = ({ onOpenCreateModal }) => {
           style={{
             display: 'none',
             alignItems: 'center',
-            gap: '1rem',
+            gap: '0.85rem',
           }}
           className="desktop-actions"
         >
           {isAuthenticated ? (
             <>
-              {/* In-app Notification Bell */}
               <NotificationDropdown />
 
               {onOpenCreateModal && (
@@ -183,23 +182,23 @@ const Navbar = ({ onOpenCreateModal }) => {
                   onClick={onOpenCreateModal}
                   className="btn btn-primary"
                   style={{
-                    padding: '0.55rem 1rem',
-                    fontSize: '0.875rem',
+                    padding: '0.5rem 0.95rem',
+                    fontSize: '0.85rem',
                   }}
                 >
-                  <PlusCircle size={16} />
+                  <PlusCircle size={15} />
                   New Project
                 </button>
               )}
 
-              {/* User badge with profile link */}
+              {/* User profile link */}
               <Link
                 to="/profile"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.65rem',
-                  padding: '0.35rem 0.85rem 0.35rem 0.4rem',
+                  gap: '0.6rem',
+                  padding: '0.3rem 0.75rem 0.3rem 0.35rem',
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid var(--glass-border)',
                   borderRadius: 'var(--radius-full)',
@@ -210,14 +209,14 @@ const Navbar = ({ onOpenCreateModal }) => {
               >
                 <div
                   style={{
-                    width: '30px',
-                    height: '30px',
+                    width: '28px',
+                    height: '28px',
                     borderRadius: '50%',
-                    background: 'var(--accent-gradient)',
+                    background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.85rem',
+                    fontSize: '0.8rem',
                     fontWeight: 700,
                     color: '#ffffff',
                   }}
@@ -226,7 +225,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 </div>
                 <span
                   style={{
-                    fontSize: '0.875rem',
+                    fontSize: '0.85rem',
                     fontWeight: 600,
                     color: '#ffffff',
                     maxWidth: '120px',
@@ -256,7 +255,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 onMouseEnter={(e) => (e.currentTarget.style.color = '#f43f5e')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
               >
-                <LogOut size={18} />
+                <LogOut size={16} />
               </button>
             </>
           ) : (
@@ -265,21 +264,21 @@ const Navbar = ({ onOpenCreateModal }) => {
                 to="/login"
                 className="btn btn-secondary"
                 style={{
-                  padding: '0.55rem 1.15rem',
-                  fontSize: '0.875rem',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.85rem',
                 }}
               >
-                Log In
+                Sign In
               </Link>
               <Link
                 to="/register"
                 className="btn btn-primary"
                 style={{
-                  padding: '0.55rem 1.15rem',
-                  fontSize: '0.875rem',
+                  padding: '0.5rem 1.15rem',
+                  fontSize: '0.85rem',
                 }}
               >
-                Get Started
+                Get Started Free
               </Link>
             </>
           )}
@@ -308,7 +307,7 @@ const Navbar = ({ onOpenCreateModal }) => {
             }}
             className="mobile-toggle"
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
@@ -317,7 +316,7 @@ const Navbar = ({ onOpenCreateModal }) => {
       {mobileMenuOpen && (
         <div
           style={{
-            background: 'rgba(10, 13, 30, 0.98)',
+            background: 'rgba(6, 8, 16, 0.98)',
             backdropFilter: 'blur(25px)',
             WebkitBackdropFilter: 'blur(25px)',
             borderBottom: '1px solid var(--glass-border)',
@@ -334,7 +333,7 @@ const Navbar = ({ onOpenCreateModal }) => {
             style={{
               padding: '0.75rem 0',
               borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-              color: isActive('/') ? '#6366f1' : 'var(--text-main)',
+              color: isActive('/') ? '#818cf8' : 'var(--text-main)',
               fontWeight: 600,
             }}
           >
@@ -349,7 +348,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 style={{
                   padding: '0.75rem 0',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  color: isActive('/dashboard') ? '#6366f1' : 'var(--text-main)',
+                  color: isActive('/dashboard') ? '#818cf8' : 'var(--text-main)',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
@@ -366,7 +365,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 style={{
                   padding: '0.75rem 0',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  color: isActive('/my-dashboard') ? '#6366f1' : 'var(--text-main)',
+                  color: isActive('/my-dashboard') ? '#818cf8' : 'var(--text-main)',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
@@ -383,7 +382,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 style={{
                   padding: '0.75rem 0',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                  color: isActive('/profile') ? '#6366f1' : 'var(--text-main)',
+                  color: isActive('/profile') ? '#818cf8' : 'var(--text-main)',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
@@ -403,7 +402,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                   className="btn btn-primary"
                   style={{ width: '100%', marginTop: '0.5rem' }}
                 >
-                  <PlusCircle size={18} />
+                  <PlusCircle size={16} />
                   New Project
                 </button>
               )}
@@ -415,7 +414,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                   justifyContent: 'space-between',
                   paddingTop: '0.75rem',
                   marginTop: '0.5rem',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -424,7 +423,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                       width: '32px',
                       height: '32px',
                       borderRadius: '50%',
-                      background: 'var(--accent-gradient)',
+                      background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -462,7 +461,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 className="btn btn-secondary"
                 style={{ width: '100%' }}
               >
-                Log In
+                Sign In
               </Link>
               <Link
                 to="/register"
@@ -470,7 +469,7 @@ const Navbar = ({ onOpenCreateModal }) => {
                 className="btn btn-primary"
                 style={{ width: '100%' }}
               >
-                Get Started
+                Get Started Free
               </Link>
             </div>
           )}

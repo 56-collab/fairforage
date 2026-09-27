@@ -103,10 +103,12 @@ function App() {
       <footer
         style={{
           borderTop: '1px solid var(--glass-border)',
-          background: 'rgba(7, 9, 19, 0.85)',
-          backdropFilter: 'blur(12px)',
+          background: 'rgba(6, 8, 16, 0.88)',
+          backdropFilter: 'blur(16px)',
           padding: '2rem 0',
           marginTop: 'auto',
+          position: 'relative',
+          zIndex: 10,
         }}
       >
         <div
@@ -118,17 +120,14 @@ function App() {
             justifyContent: 'space-between',
             gap: '1rem',
             fontSize: '0.85rem',
-            color: 'var(--text-subtle)',
+            color: 'var(--text-muted)',
           }}
         >
           <div>
-            <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>FairForge</span> — Intelligent Team Contribution & Workload Management Platform
+            <span style={{ fontWeight: 700, color: '#ffffff' }}>FairForge</span> — Intelligent Team Contribution & Workload Management
           </div>
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></span>
-              Full MERN Stack Live (Atlas Connected)
-            </span>
+          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', color: 'var(--text-subtle)', fontSize: '0.8rem' }}>
+            <span>Equal Effort. Intelligent Workload. Better Software Projects.</span>
           </div>
         </div>
       </footer>

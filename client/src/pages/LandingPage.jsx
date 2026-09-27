@@ -1,9 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { RectangleButtons } from '../shaders/rectangle-buttons/RectangleButtons';
 import FairForgeBackground from '../components/effects/FairForgeBackground';
-import '../shaders/threeui.css';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -14,70 +12,75 @@ import {
   CheckCircle2, 
   Cpu, 
   GitBranch, 
-  Activity
+  Activity,
+  Zap,
+  TrendingUp,
+  Scale,
+  BrainCircuit,
+  Workflow,
+  Check,
+  ChevronRight,
+  GitPullRequest,
+  Clock,
+  Lock
 } from 'lucide-react';
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const handleBloomCtaClick = () => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    } else {
-      navigate('/register');
-    }
-  };
-
   return (
-    <div style={{ position: 'relative', paddingBottom: '5rem', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Primary ThreeUI LandscapeScene Night Atmospheric Environment */}
+      <FairForgeBackground />
+
       {/* Hero Section */}
       <section
         style={{
-          paddingTop: '4.5rem',
-          paddingBottom: '4rem',
+          paddingTop: '5rem',
+          paddingBottom: '5.5rem',
           textAlign: 'center',
           position: 'relative',
+          zIndex: 1,
         }}
       >
-        {/* Ambient ThreeUI ElementsCollection Fire Background */}
-        <FairForgeBackground />
-
-        <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '900px' }}>
-          {/* Badge */}
+        <div className="container" style={{ maxWidth: '920px' }}>
+          {/* Subtle Moonlit Badge */}
           <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              padding: '0.4rem 1rem',
-              background: 'rgba(99, 102, 241, 0.12)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
+              padding: '0.4rem 1.1rem',
+              background: 'rgba(59, 130, 246, 0.1)',
+              border: '1px solid rgba(99, 102, 241, 0.25)',
               borderRadius: 'var(--radius-full)',
               color: '#c7d2fe',
               fontSize: '0.85rem',
               fontWeight: 600,
-              marginBottom: '1.75rem',
+              marginBottom: '2rem',
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)',
             }}
           >
-            <Sparkles size={16} color="#818cf8" />
-            <span>Next-Gen Student & Software Team Workspace</span>
+            <Sparkles size={15} color="#818cf8" />
+            <span>Intelligent Team Workload Platform</span>
           </div>
 
-          {/* Heading */}
+          {/* Main Hero Heading */}
           <h1
             style={{
-              fontSize: 'clamp(2.2rem, 5vw, 3.75rem)',
+              fontSize: 'clamp(2.4rem, 5.5vw, 4rem)',
               fontWeight: 800,
               lineHeight: 1.15,
               marginBottom: '1.5rem',
               letterSpacing: '-0.03em',
+              color: '#ffffff',
             }}
           >
             Equal Effort.{' '}
             <span
               style={{
-                background: 'var(--accent-gradient)',
+                background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #c084fc 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -88,230 +91,275 @@ const LandingPage = () => {
             Better Software Projects.
           </h1>
 
-          {/* Subtitle */}
+          {/* Supporting Subtitle */}
           <p
             style={{
-              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-              color: 'var(--text-muted)',
+              fontSize: 'clamp(1.05rem, 2vw, 1.25rem)',
+              color: 'var(--text-secondary)',
               lineHeight: 1.6,
-              marginBottom: '2.5rem',
-              maxWidth: '720px',
+              marginBottom: '2.75rem',
+              maxWidth: '740px',
               marginLeft: 'auto',
               marginRight: 'auto',
             }}
           >
-            FairForge empowers student cohorts and software engineering teams to assign
-            tasks equitably, track real contribution metrics, and eliminate project burnout.
+            FairForge helps student software engineering cohorts and development teams understand workload,
+            track authentic project activity, identify imbalances early, and make explainable task allocation decisions.
           </p>
 
-          {/* CTA Buttons with ThreeUI RectangleButtons (Bloom Outline Button) */}
+          {/* Core FairForge CTAs */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '1.25rem',
+              gap: '1rem',
               flexWrap: 'wrap',
             }}
           >
-            {/* Primary Interactive Bloom Outline CTA */}
-            <div
-              onClick={handleBloomCtaClick}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleBloomCtaClick();
-                }
-              }}
-              style={{
-                display: 'inline-block',
-                cursor: 'pointer',
-                borderRadius: '8px',
-                outline: 'none',
-              }}
-              title={isAuthenticated ? 'Go to Dashboard' : 'Get Started Free'}
-            >
-              <RectangleButtons
-                variant="bloom-outline-button"
-                mode="dark"
-                hue={0}
-                saturation={1.00}
-                brightness={1.00}
-                style={{
-                  minHeight: 'unset',
-                  height: 'auto',
-                  background: 'transparent',
-                  padding: 0,
-                  width: 'auto',
-                  display: 'inline-flex',
-                }}
-              />
-            </div>
-
-            {/* Secondary Standard Action */}
-            {!isAuthenticated && (
+            {isAuthenticated ? (
               <Link
-                to="/login"
-                className="btn btn-secondary"
+                to="/dashboard"
+                className="btn btn-primary"
                 style={{
-                  padding: '0.85rem 1.75rem',
-                  fontSize: '0.95rem',
-                  height: '46px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
+                  padding: '0.9rem 2.25rem',
+                  fontSize: '1rem',
+                  borderRadius: 'var(--radius-md)',
                 }}
               >
-                Sign In
+                Go to Workspace Dashboard
+                <ArrowRight size={18} />
               </Link>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.9rem 2.25rem',
+                    fontSize: '1rem',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  Get Started Free
+                  <ArrowRight size={18} />
+                </Link>
+                <Link
+                  to="/login"
+                  className="btn btn-secondary"
+                  style={{
+                    padding: '0.9rem 2rem',
+                    fontSize: '1rem',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  Sign In
+                </Link>
+              </>
             )}
           </div>
         </div>
       </section>
 
-      {/* Feature Cards Grid */}
-      <section style={{ paddingTop: '2rem', paddingBottom: '3rem' }}>
+      {/* Interactive Feature Grid / Core Product Values */}
+      <section style={{ paddingTop: '1.5rem', paddingBottom: '4.5rem', position: 'relative', zIndex: 1 }}>
         <div className="container">
-          <div
-            style={{
-              textAlign: 'center',
-              marginBottom: '3rem',
-            }}
-          >
-            <h2 style={{ fontSize: '1.85rem', marginBottom: '0.75rem' }}>
-              Built to Solve Team Imbalance
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.65rem', letterSpacing: '-0.02em' }}>
+              Built to Eliminate Team Imbalance
             </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
-              A modern foundation engineered for clarity, transparency, and collaboration.
+            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+              Transparent, explainable intelligence that gives every team member clear visibility and fair recognition.
             </p>
           </div>
 
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
               gap: '1.5rem',
             }}
           >
-            {/* Feature 1 */}
+            {/* Value 1: Workload Intelligence */}
             <div className="glass-card" style={{ padding: '2rem' }}>
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'rgba(99, 102, 241, 0.15)',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
+                  background: 'rgba(59, 130, 246, 0.12)',
+                  border: '1px solid rgba(59, 130, 246, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#818cf8',
+                  color: '#60a5fa',
                   marginBottom: '1.25rem',
                 }}
               >
-                <Users2 size={24} />
+                <Zap size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.6rem' }}>
-                Collaborative Team Workspaces
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
+                Intelligent Workload Management
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Create projects, invite team members, assign lead and developer roles, and keep
-                everyone synchronized with a unified workspace.
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                Understand how work is distributed across your team in real time based on active tasks, effort weights, priority, and upcoming deadlines.
               </p>
             </div>
 
-            {/* Feature 2 */}
+            {/* Value 2: Contribution Activity */}
             <div className="glass-card" style={{ padding: '2rem' }}>
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'rgba(236, 72, 153, 0.15)',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#f472b6',
+                  color: '#34d399',
                   marginBottom: '1.25rem',
                 }}
               >
-                <BarChart3 size={24} />
+                <BarChart3 size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.6rem' }}>
-                Workload Intelligence
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
+                Contribution Activity
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Track active task loads per member to identify overburdened developers or
-                idle contributors early before project deadlines slip.
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                See comprehensive activity across completed tasks, code reviews, and connected GitHub repositories without arbitrary judgment.
               </p>
             </div>
 
-            {/* Feature 3 */}
+            {/* Value 3: Imbalance Detection */}
             <div className="glass-card" style={{ padding: '2rem' }}>
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'rgba(6, 182, 212, 0.15)',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
+                  background: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#22d3ee',
+                  color: '#fbbf24',
                   marginBottom: '1.25rem',
                 }}
               >
-                <Activity size={24} />
+                <Scale size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.6rem' }}>
-                Transparent Contribution
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
+                Workload Imbalance Detection
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Full visibility into who completed what task, providing fair grading for
-                student teams and objective performance insights for leads.
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                Automatically detect when individual contributors are overburdened or idle before deadlines slip and team burnout occurs.
+              </p>
+            </div>
+
+            {/* Value 4: Explainable Recommendations */}
+            <div className="glass-card" style={{ padding: '2rem' }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
+                  background: 'rgba(168, 85, 247, 0.12)',
+                  border: '1px solid rgba(168, 85, 247, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#c084fc',
+                  marginBottom: '1.25rem',
+                }}
+              >
+                <BrainCircuit size={22} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', color: '#ffffff' }}>
+                Explainable Recommendations
+              </h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                Get transparent task redistribution suggestions based on current workload, estimated effort, deadlines, and matched member skills.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tech Architecture Highlights */}
-      <section style={{ paddingTop: '2rem' }}>
+      {/* How FairForge Works Workflow Section */}
+      <section style={{ padding: '4rem 0', position: 'relative', zIndex: 1 }}>
         <div className="container">
-          <div
-            className="glass-panel"
-            style={{
-              padding: '2.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.5rem',
-              background: 'linear-gradient(135deg, rgba(19, 25, 56, 0.8), rgba(13, 17, 38, 0.9))',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Cpu size={24} color="#818cf8" />
-              <h3 style={{ fontSize: '1.35rem' }}>MERN Full-Stack Foundation</h3>
+          <div className="glass-panel" style={{ padding: '3rem 2.5rem', background: 'linear-gradient(135deg, rgba(11, 16, 32, 0.8) 0%, rgba(6, 8, 16, 0.95) 100%)' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2.75rem' }}>
+              <span style={{ fontSize: '0.8rem', color: '#60a5fa', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                ARCHITECTURE OF FAIR ALLOCATION
+              </span>
+              <h2 style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.4rem' }}>
+                How FairForge Intelligence Works
+              </h2>
             </div>
-            <div
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem', alignItems: 'center' }}>
+              {/* Step 1 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.15)', color: '#60a5fa', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>
+                  1
+                </div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>Capture Continuous Signals</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  Tasks, status transitions, commit frequencies, pull requests, and member skill profiles are tracked continuously.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>
+                  2
+                </div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>Evaluate Workload Health</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  Mathematical variance engines compute active workload disparities relative to the team median without black-box bias.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>
+                  3
+                </div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>Actionable Redistribution</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  When imbalance emerges, leads receive explainable reassignment recommendations that can be reviewed and approved with 1 click.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final Call to Action */}
+      <section style={{ padding: '4.5rem 0 5rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="container" style={{ maxWidth: '700px' }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+            Build better-balanced software teams.
+          </h2>
+          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>
+            Give student cohorts and development teams the clarity, equity, and workload intelligence they need to succeed.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link
+              to={isAuthenticated ? '/dashboard' : '/register'}
+              className="btn btn-primary"
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1.25rem',
+                padding: '0.85rem 2rem',
+                fontSize: '0.95rem',
+                borderRadius: 'var(--radius-md)',
               }}
             >
-              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontWeight: 700, color: '#818cf8', marginBottom: '0.25rem' }}>React (Vite)</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>High-performance mobile-first SPA with Glassmorphism</div>
-              </div>
-              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontWeight: 700, color: '#34d399', marginBottom: '0.25rem' }}>Node + Express</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Robust REST API with JWT security and middleware guards</div>
-              </div>
-              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '0.25rem' }}>MongoDB + Mongoose</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Scalable schematized models for users, teams, and projects</div>
-              </div>
-            </div>
+              {isAuthenticated ? 'Open Dashboard' : 'Get Started Free'}
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>
