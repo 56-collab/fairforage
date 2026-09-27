@@ -4,8 +4,15 @@ const Project = require('../models/Project');
 const Task = require('../models/Task');
 const Activity = require('../models/Activity');
 const User = require('../models/User');
+const GitHubActivity = require('../models/GitHubActivity');
+const Recommendation = require('../models/Recommendation');
 const { protect } = require('../middleware/authMiddleware');
 const { createNotification } = require('../services/notificationService');
+const { 
+  calculateActivityIndex, 
+  analyzeWorkload, 
+  generateRedistributionRecommendations 
+} = require('../services/analyticsService');
 
 // All project routes are protected
 router.use(protect);
@@ -165,13 +172,13 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   GET /api/projects/:id/dashboard
-// @desc    Get project summary dashboard metrics (tasks, progress, overdue, activity)
+// @desc    Get complete aggregated intelligence for an individual project
 // @access  Private
 router.get('/:id/dashboard', async (req, res) => {
   try {
     const project = await Project.findById(req.params.id)
-      .populate('owner', 'name email avatar skills')
-      .populate('members.user', 'name email avatar skills');
+      .populate('owner', 'name email avatar skills githubUsername')
+      .populate('members.user', 'name email avatar skills githubUsername');
 
     if (!project) {
       return res.status(404).json({ success: false, message: 'Project not found' });
@@ -183,7 +190,7 @@ router.get('/:id/dashboard', async (req, res) => {
     }
 
     const tasks = await Task.find({ project: project._id })
-      .populate('assignedTo', 'name email avatar skills')
+      .populate('assignedTo', 'name email avatar skills githubUsername')
       .sort({ dueDate: 1 });
 
     const now = new Date();
@@ -193,39 +200,238 @@ router.get('/:id/dashboard', async (req, res) => {
     const todoTasks = tasks.filter((t) => t.status === 'todo').length;
     const backlogTasks = tasks.filter((t) => t.status === 'backlog').length;
     const reviewTasks = tasks.filter((t) => t.status === 'review').length;
-    const pendingTasks = totalTasks - completedTasks;
+    const activeTasks = totalTasks - completedTasks;
     const overdueTasks = tasks.filter(
       (t) => t.dueDate && new Date(t.dueDate) < now && t.status !== 'completed'
     ).length;
+    const unassignedTasks = tasks.filter((t) => !t.assignedTo && t.status !== 'completed').length;
 
-    const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-    // Upcoming deadlines in next 7 days
-    const upcomingDeadlines = tasks
-      .filter((t) => t.dueDate && new Date(t.dueDate) >= now && t.status !== 'completed')
-      .slice(0, 5);
+    // Deadline calculation
+    let daysRemaining = null;
+    let deadlineStatusText = 'No deadline set';
+    if (project.deadline) {
+      const deadlineDate = new Date(project.deadline);
+      const diffMs = deadlineDate.setHours(23, 59, 59, 999) - now.getTime();
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      daysRemaining = diffDays;
+      if (diffDays < 0) {
+        deadlineStatusText = `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'}`;
+      } else if (diffDays === 0) {
+        deadlineStatusText = 'Due today';
+      } else {
+        deadlineStatusText = `${diffDays} day${diffDays === 1 ? '' : 's'} remaining`;
+      }
+    }
 
-    // Recent activity
-    const recentActivity = await Activity.find({ project: project._id })
+    // Run Analytics Service
+    const [activityIndexData, workloadData, recommendationsData] = await Promise.all([
+      calculateActivityIndex(project).catch(() => ({ members: [], weights: {} })),
+      analyzeWorkload(project).catch(() => ({ isBalanced: true, memberWorkloads: [], overloadedMembers: [], availableMembers: [], alerts: [] })),
+      Recommendation.find({ project: project._id, status: 'pending' })
+        .populate('task', 'title priority difficulty status dueDate requiredSkills')
+        .populate('fromMember', 'name email avatar skills')
+        .populate('toMember', 'name email avatar skills')
+        .sort({ confidenceScore: -1 })
+        .catch(() => [])
+    ]);
+
+    // Workload health evaluation
+    let workloadHealthState = 'Balanced';
+    let workloadHealthColor = 'success';
+    let workloadHealthExplanation = 'Current estimated workload is relatively evenly distributed across active members.';
+
+    if (workloadData.overloadedMembers && workloadData.overloadedMembers.length >= 2) {
+      workloadHealthState = 'High Imbalance';
+      workloadHealthColor = 'danger';
+      workloadHealthExplanation = `${workloadData.overloadedMembers.length} members currently carry a substantially higher active workload than the team median.`;
+    } else if (workloadData.overloadedMembers && workloadData.overloadedMembers.length === 1) {
+      workloadHealthState = 'Moderate Imbalance';
+      workloadHealthColor = 'warning';
+      workloadHealthExplanation = `1 member is handling an elevated share of active tasks while other members have available bandwidth.`;
+    } else if (tasks.length === 0) {
+      workloadHealthState = 'Balanced';
+      workloadHealthColor = 'info';
+      workloadHealthExplanation = 'No active tasks recorded yet in this project.';
+    }
+
+    // Normalizing workload percentages for chart/bars (0-100 scale)
+    const maxWorkloadScore = Math.max(1, ...(workloadData.memberWorkloads || []).map((m) => m.workloadScore));
+    const normalizedMemberWorkloads = (workloadData.memberWorkloads || []).map((m) => {
+      const workloadPercentage = maxWorkloadScore > 0 ? Math.min(100, Math.round((m.workloadScore / maxWorkloadScore) * 100)) : 0;
+      return {
+        ...m,
+        workloadPercentage,
+      };
+    });
+
+    // Needs Attention rule-based generator
+    const attentionItems = [];
+    if (overdueTasks > 0) {
+      attentionItems.push({
+        id: 'overdue-tasks',
+        type: 'overdue',
+        severity: 'danger',
+        title: 'Overdue Tasks',
+        description: `${overdueTasks} task${overdueTasks === 1 ? '' : 's'} past the due date require immediate review or rescheduling.`,
+        actionText: 'View Overdue Tasks',
+        filterStatus: 'overdue',
+      });
+    }
+
+    if (workloadHealthState !== 'Balanced' && workloadData.overloadedMembers?.length > 0) {
+      attentionItems.push({
+        id: 'workload-imbalance',
+        type: 'imbalance',
+        severity: 'warning',
+        title: 'Workload Imbalance Detected',
+        description: `${workloadData.overloadedMembers.map((m) => m.user.name).join(', ')} currently carry disproportionate task weights. Consider redistributing pending tasks.`,
+        actionText: 'Check Recommendations',
+        targetSection: 'recommendations',
+      });
+    }
+
+    if (daysRemaining !== null && daysRemaining <= 3 && activeTasks > 0) {
+      attentionItems.push({
+        id: 'approaching-deadline',
+        type: 'deadline',
+        severity: daysRemaining < 0 ? 'danger' : 'warning',
+        title: daysRemaining < 0 ? 'Project Deadline Exceeded' : 'Approaching Project Deadline',
+        description: daysRemaining < 0
+          ? `Project deadline expired ${Math.abs(daysRemaining)} days ago with ${activeTasks} incomplete task(s).`
+          : `Project deadline is in ${daysRemaining} day(s) with ${activeTasks} incomplete task(s) remaining.`,
+        actionText: 'Review Milestones',
+      });
+    }
+
+    if (unassignedTasks > 0) {
+      attentionItems.push({
+        id: 'unassigned-tasks',
+        type: 'unassigned',
+        severity: 'warning',
+        title: 'Unassigned Tasks',
+        description: `${unassignedTasks} task${unassignedTasks === 1 ? '' : 's'} do not currently have an assigned team member.`,
+        actionText: 'Assign Tasks',
+        filterStatus: 'unassigned',
+      });
+    }
+
+    if (reviewTasks > 0) {
+      attentionItems.push({
+        id: 'review-tasks',
+        type: 'review',
+        severity: 'info',
+        title: 'Tasks in Review',
+        description: `${reviewTasks} task${reviewTasks === 1 ? '' : 's'} awaiting code review or QA acceptance.`,
+        actionText: 'Review Tasks',
+        filterStatus: 'review',
+      });
+    }
+
+    // GitHub activity
+    const isGithubConnected = Boolean(project.githubRepo?.owner && project.githubRepo?.repo);
+    const gitHubActivities = await GitHubActivity.find({ project: project._id })
+      .populate('fairforgeUser', 'name email avatar')
+      .sort({ timestamp: -1 })
+      .limit(15);
+
+    const gitStats = {
+      commits: gitHubActivities.filter((g) => g.type === 'commit').length,
+      pullRequests: gitHubActivities.filter((g) => g.type === 'pull_request').length,
+      reviews: gitHubActivities.filter((g) => g.type === 'review').length,
+      issues: gitHubActivities.filter((g) => g.type === 'issue').length,
+      totalEvents: gitHubActivities.length,
+    };
+
+    // Recent activity audit trail
+    const recentActivities = await Activity.find({ project: project._id })
       .populate('user', 'name email avatar')
       .sort({ timestamp: -1 })
       .limit(10);
 
+    // Team member view
+    const teamMembers = [
+      {
+        user: project.owner,
+        role: 'owner',
+        skills: project.owner?.skills || [],
+        activeTasksCount: (workloadData.memberWorkloads?.find((m) => m.user._id.toString() === project.owner._id.toString()))?.activeTasksCount || 0,
+        workloadStatus: (workloadData.memberWorkloads?.find((m) => m.user._id.toString() === project.owner._id.toString()))?.status || 'balanced',
+      },
+      ...(project.members || []).map((m) => ({
+        user: m.user,
+        role: m.role || 'member',
+        skills: m.user?.skills || [],
+        activeTasksCount: (workloadData.memberWorkloads?.find((wm) => wm.user._id.toString() === (m.user._id || m.user).toString()))?.activeTasksCount || 0,
+        workloadStatus: (workloadData.memberWorkloads?.find((wm) => wm.user._id.toString() === (m.user._id || m.user).toString()))?.status || 'balanced',
+      }))
+    ];
+
+    const projectObj = project.toObject();
+    projectObj.currentUserRole = userRole;
+
     return res.status(200).json({
       success: true,
-      metrics: {
-        totalTasks,
-        completedTasks,
-        pendingTasks,
-        inProgressTasks,
-        todoTasks,
-        backlogTasks,
-        reviewTasks,
-        overdueTasks,
-        progress,
-        memberCount: (project.members?.length || 0) + (project.owner ? 0 : 1),
-        upcomingDeadlines,
-        recentActivity,
+      data: {
+        project: projectObj,
+        metrics: {
+          activeTasks,
+          completedTasks,
+          overdueTasks,
+          teamMembers: teamMembers.length,
+          workloadHealth: {
+            state: workloadHealthState,
+            color: workloadHealthColor,
+            explanation: workloadHealthExplanation,
+          },
+          deadline: {
+            date: project.deadline,
+            daysRemaining,
+            statusText: deadlineStatusText,
+          },
+          unassignedTasks,
+          reviewTasks,
+        },
+        progress: {
+          totalTasks,
+          completedTasks,
+          activeTasks,
+          todoTasks,
+          inProgressTasks,
+          reviewTasks,
+          backlogTasks,
+          overdueTasks,
+          percentage: progressPercentage,
+        },
+        workload: {
+          isBalanced: workloadData.isBalanced,
+          avgWorkload: workloadData.avgWorkload,
+          members: normalizedMemberWorkloads,
+        },
+        workloadHealth: {
+          state: workloadHealthState,
+          color: workloadHealthColor,
+          explanation: workloadHealthExplanation,
+          overloadedCount: workloadData.overloadedMembers?.length || 0,
+          availableCount: workloadData.availableMembers?.length || 0,
+        },
+        contributionActivity: {
+          members: activityIndexData.members || [],
+          weights: activityIndexData.weights || {},
+          hasGitHub: isGithubConnected,
+          explanation: 'Composite activity indicator based on recorded project and repository activity. It is not a direct measure of overall contribution.',
+        },
+        attentionItems,
+        recommendations: recommendationsData,
+        team: teamMembers,
+        github: {
+          connected: isGithubConnected,
+          repoName: isGithubConnected ? `${project.githubRepo.owner}/${project.githubRepo.repo}` : '',
+          stats: gitStats,
+          recentActivity: gitHubActivities.slice(0, 5),
+        },
+        recentActivity: recentActivities,
       },
     });
   } catch (error) {

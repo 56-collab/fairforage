@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import ProjectDashboardPage from './pages/ProjectDashboardPage';
 import PersonalDashboardPage from './pages/PersonalDashboardPage';
 import ProfileSettingsPage from './pages/ProfileSettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -58,6 +59,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfileSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/project/:id/dashboard"
+            element={
+              <ProtectedRoute>
+                <ProjectDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId/dashboard"
+            element={
+              <ProtectedRoute>
+                <ProjectDashboardPage />
               </ProtectedRoute>
             }
           />

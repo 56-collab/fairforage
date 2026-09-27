@@ -79,7 +79,7 @@ const ProjectCard = ({ project, currentUserId, onDelete }) => {
           }}
         >
           <Link
-            to={`/project/${project._id}`}
+            to={`/project/${project._id}/dashboard`}
             style={{
               textDecoration: 'none',
               transition: 'color var(--transition-fast)',
@@ -196,7 +196,7 @@ const ProjectCard = ({ project, currentUserId, onDelete }) => {
           )}
 
           <Link
-            to={`/project/${project._id}`}
+            to={`/project/${project._id}/dashboard`}
             className="btn btn-secondary"
             style={{
               padding: '0.4rem 0.75rem',
@@ -204,7 +204,7 @@ const ProjectCard = ({ project, currentUserId, onDelete }) => {
               gap: '0.3rem',
             }}
           >
-            Open
+            Dashboard
             <ArrowRight size={14} />
           </Link>
         </div>
